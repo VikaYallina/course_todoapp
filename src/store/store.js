@@ -1,12 +1,13 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import * as todos from "@/store/modules/todos.js";
+import {todo_module} from "@/store/modules/todos.js";
+import {steps} from "@/store/modules/steps";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-    state: todos.state,
-    getters: todos.getters,
-    mutations: todos.mutations,
-    actions: todos.actions
+    modules:{
+        todo: todo_module,
+        step: steps
+    }
 });

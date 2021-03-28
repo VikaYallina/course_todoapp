@@ -1,20 +1,41 @@
-export const state = {
-    todos: [],
-    currentGroup:0
+
+
+const state = {
+    todos: [{
+        id:0,
+        text:'example text',
+        completed: false,
+        complete_by: "2021-03-27",
+        importance_lvl:3,
+        group_id: 1
+    }, {
+        id:1,
+        completed: true,
+        text:'new test',
+        complete_by: "2021-03-02",
+        importance_lvl: 5,
+        group_id: 1
+    }],
 };
 
-export const getters ={
+const getters ={
     getTodos: state => state.todos,
-    getCurrGroup: state => state.currentGroup
+    doneTodos: state => state.todos.filter(todo => todo.completed),
+    getTodoByGroup: state => (id) =>{
+        return state.todos.filter(todo => todo.group_id == id)
+    }
 };
 
-export const mutations = {
+const mutations = {
     ADD_TODO: (state, payload) =>{
         const newTask={
             id: payload.newId,
             text: payload.text,
             completed: false,
-            edit: false
+            steps: [],
+            complete_by: payload.complete_by,
+            importance_lvl:1,
+            group_id: payload.group_id
         }
         state.todos.unshift(newTask);
     },
@@ -33,17 +54,23 @@ export const mutations = {
     EDIT_TODO: (state, payload) =>{
         const index = state.todos.findIndex(todo => todo.id === payload.id);
         if (index>-1){
-            state.todos[index] = payload.text;
+            state.todos[index].text = payload.new_text;
         }
     },
 
-    CHANGE_GROUP: (state, payload) =>{
-        state.currentGroup = payload;
+    FULL_EDIT_TODO: (state, payload) =>{
+        const index = state.todos.findIndex(todo => todo.id === payload.id);
+        if (index>-1){
+            state.todos[index].text = payload.text;
+            state.todos[index].complete_by = payload.complete_by;
+            state.todos[index].importance_lvl = payload.imp_lvl;
+        }
     }
+
 };
 
 
-export const actions ={
+const actions ={
     addTodo: (context, payload) =>{
         context.commit("ADD_TODO", payload);
     },
@@ -56,7 +83,14 @@ export const actions ={
     editTodo: (context, payload) =>{
         context.commit("EDIT_TODO",payload)
     },
-    changeGroup: (context, payload) =>{
-        context.commit("CHANGE_GROUP", payload);
+    fullEditTodo: (context, payload) =>{
+        context.commit("FULL_EDIT_TODO", payload);
     }
+}
+
+export const todo_module = {
+    state: state,
+    getters: getters,
+    actions: actions,
+    mutations: mutations,
 }

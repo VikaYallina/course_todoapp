@@ -1,5 +1,9 @@
 # todo_app
 
+A web application for managing day-to-day tasks.
+
+Created using Vue.js 
+
 ## Project setup
 ```
 npm install

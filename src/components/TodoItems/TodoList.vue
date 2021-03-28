@@ -9,10 +9,14 @@
 </template>
 
 <script>
-import Todo from "@/components/Todo";
+import Todo from "@/components/TodoItems/Todo";
 export default {
   name: "TodoList",
   components: {Todo},
+  props:{
+    group_id: Number,
+    action: Number
+  },
   computed:{
     todos() {
       return this.$store.getters.getTodos;
@@ -26,6 +30,7 @@ export default {
 .tasks {
   padding: 0;
   list-style-type: none;
+  width: 45rem;
 }
 
 
