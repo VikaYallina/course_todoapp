@@ -12,9 +12,16 @@ const state = {
         id:1,
         completed: true,
         text:'new test',
-        complete_by: "2021-03-02",
+        complete_by: "2021-04-10",
         importance_lvl: 5,
         group_id: 1
+    },{
+        id:2,
+        completed: true,
+        text:'new test',
+        complete_by: "2021-03-29",
+        importance_lvl: 5,
+        group_id: 2
     }],
 };
 
@@ -22,8 +29,9 @@ const getters ={
     getTodos: state => state.todos,
     doneTodos: state => state.todos.filter(todo => todo.completed),
     getTodoByGroup: state => (id) =>{
-        return state.todos.filter(todo => todo.group_id == id)
-    }
+        return state.todos.filter(todo => todo.group_id === id)
+    },
+    getTodayTodos: state => state.todos.filter(checkToday)
 };
 
 const mutations = {
@@ -62,7 +70,7 @@ const mutations = {
         const index = state.todos.findIndex(todo => todo.id === payload.id);
         if (index>-1){
             state.todos[index].text = payload.text;
-            state.todos[index].complete_by = payload.complete_by;
+            state.todos[index].complete_by = payload.data.state.complete_by;
             state.todos[index].importance_lvl = payload.imp_lvl;
         }
     }
@@ -93,4 +101,10 @@ export const todo_module = {
     getters: getters,
     actions: actions,
     mutations: mutations,
+}
+
+function checkToday(todo){
+    let today = new Date();
+    let todo_date = new Date(todo.complete_by);
+    return today.toDateString() === todo_date.toDateString()
 }

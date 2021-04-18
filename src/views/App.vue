@@ -14,29 +14,49 @@
 <!--    </div>-->
       <div id="app">
         <v-app id="inspire">
-          <v-app id="inspire">
+<!--          <v-app id="inspire">-->
             <v-navigation-drawer
                 v-model="drawer"
                 app
             >
               <v-list dense>
-                <v-list-item link>
+                <v-list-item link v-on:click="selected_group='today'">
                   <v-list-item-action>
                     <v-icon>mdi-home</v-icon>
                   </v-list-item-action>
                   <v-list-item-content>
-                    <v-list-item-title>Home</v-list-item-title>
+                    <v-list-item-title>Today</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item link>
+                <v-list-item link v-on:click="selected_group='planned'">
                   <v-list-item-action>
                     <v-icon>mdi-email</v-icon>
                   </v-list-item-action>
                   <v-list-item-content>
-                    <v-list-item-title>Contact</v-list-item-title>
+                    <v-list-item-title>Planned</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
+                <v-list-item link v-on:click="selected_group='important'">
+                  <v-list-item-action>
+                    <v-icon>mdi-email</v-icon>
+                  </v-list-item-action>
+                  <v-list-item-content>
+                    <v-list-item-title>Important</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item link @click="selected_group='completed'">
+                  <v-list-item-action>
+                    <v-icon>mdi-email</v-icon>
+                  </v-list-item-action>
+                  <v-list-item-content>
+                    <v-list-item-title>Completed</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-divider></v-divider>
+                <GroupList @got_id="selectGroup"/>
+                <NewGroup />
               </v-list>
+
             </v-navigation-drawer>
 
             <v-app-bar
@@ -54,10 +74,10 @@
                   fluid
               >
                 <v-row align="center" justify="center">
-                  <NewTodo />
+                  <NewTodo :group_id="group_id"/>
                 </v-row>
-                <v-row align="center" justify="center">
-                  <TodoList />
+                <v-row align="center" justify="center" no-gutters>
+                  <TodoList :selected_group="selected_group" :group_id="group_id"/>
                 </v-row>
               </v-container>
             </v-main>
@@ -68,7 +88,7 @@
               <span class="white--text">&copy; {{ new Date().getFullYear() }}</span>
             </v-footer
             >
-          </v-app>
+<!--          </v-app>-->
         </v-app>
       </div>
 
@@ -80,17 +100,31 @@
 <script>
 import NewTodo from "@/components/TodoItems/NewTodo";
 import TodoList from "@/components/TodoItems/TodoList";
+import GroupList from "@/components/TodoGroup/GroupList";
+import NewGroup from "@/components/TodoGroup/NewGroup";
 export default {
   name: 'App',
 
   components: {
+    GroupList,
     TodoList,
-    NewTodo
+    NewTodo,
+    NewGroup
   },
 
   data: () => ({
-    drawer: false
+    drawer: true,
+    selected_group:'none',
+    group_id:0
   }),
+
+  methods:{
+    selectGroup(value){
+      this.selected_group = 'created';
+      this.group_id = value;
+      console.log('id',value);
+    }
+  }
 };
 </script>
 <style >

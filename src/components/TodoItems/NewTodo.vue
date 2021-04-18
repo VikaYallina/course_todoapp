@@ -17,6 +17,9 @@ name: "NewTodo",
       newId: 0
     }
   },
+  props:{
+    group_id:Number
+  },
   methods:{
     addTodo: function(){
       this.$store.dispatch("addTodo",this);

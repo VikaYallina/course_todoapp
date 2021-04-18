@@ -46,7 +46,7 @@
         >
           <template v-slot:activator="{ on, attrs }">
             <v-text-field
-                v-model="state.complete_by"
+                v-model="todo.complete_by"
                 label="Picker without buttons"
                 prepend-icon="mdi-calendar"
                 readonly
@@ -55,7 +55,7 @@
             ></v-text-field>
           </template>
           <v-date-picker
-              v-model="state.complete_by"
+              v-model="todo.complete_by"
               @input="menu = false"
               color="green"
           ></v-date-picker>
@@ -66,7 +66,7 @@
           align="right"
           justify="space-around"
         >
-          <v-btn @click="completeModal(todo.id)" color="success">
+          <v-btn @click="completeModal()" color="success">
             Edit
           </v-btn>
           <v-btn @click="closeModal()" color="error">
@@ -90,13 +90,13 @@ export default {
       type: Object,
       required: true
     },
-    index: Number
+    index: Number,
+    group_id: Number
   },
   data() {
     return {
       state: {edit:false,
               modal_edit: false,
-              complete_by: this.todo.complete_by,
               mod_edit_text: this.todo.text
       },
       date: new Date().toISOString().substr(0, 10),
@@ -119,8 +119,8 @@ export default {
     closeModal:function(){
       this.$refs.modal.show = false
     },
-    completeModal:function(id, text, complete_by, imp_lvl){
-      this.$store.dispatch("fullEditTodo", id, text, complete_by, imp_lvl)
+    completeModal:function(){
+      this.$store.dispatch("fullEditTodo", this)
       this.$refs.modal.show = false
     }
   },
