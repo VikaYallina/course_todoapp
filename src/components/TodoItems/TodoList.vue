@@ -1,12 +1,12 @@
 <template>
-<ul class="tasks">
+<v-col>
     <Todo v-for="(todo, i) in todos"
           :key="i"
           v-bind:todo="todo"
           v-bind:index="i"
           v-bind:group_id="group_id"
     ></Todo>
-</ul>
+</v-col>
 </template>
 
 <script>

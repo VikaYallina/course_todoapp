@@ -1,28 +1,8 @@
+import GroupApiItem from "@/api/group.api";
 
 
 const state = {
-    todos: [{
-        id:0,
-        text:'example text',
-        completed: false,
-        complete_by: "2021-03-27",
-        importance_lvl:3,
-        group_id: 1
-    }, {
-        id:1,
-        completed: true,
-        text:'new test',
-        complete_by: "2021-04-10",
-        importance_lvl: 5,
-        group_id: 1
-    },{
-        id:2,
-        completed: true,
-        text:'new test',
-        complete_by: "2021-03-29",
-        importance_lvl: 5,
-        group_id: 2
-    }],
+    todos: []
 };
 
 const getters ={
@@ -79,19 +59,26 @@ const mutations = {
 
 
 const actions ={
-    addTodo: (context, payload) =>{
-        context.commit("ADD_TODO", payload);
+    addTodo: async (context, payload) =>{
+        try {
+            const response = await GroupApiItem.groupApiItem.delete(payload);
+            console.log(response.data);
+            context.commit('DELETE_GROUP', response.data );
+        }
+        catch (error) {
+            console.log("err init group");
+        }
     },
-    toggleTodo: (context, payload) =>{
+    toggleTodo: async (context, payload) =>{
         context.commit("TOGGLE_TODO", payload);
     },
-    deleteTodo: (context, payload) =>{
+    deleteTodo: async (context, payload) =>{
         context.commit("DELETE_TODO",payload);
     },
-    editTodo: (context, payload) =>{
+    editTodo: async (context, payload) =>{
         context.commit("EDIT_TODO",payload)
     },
-    fullEditTodo: (context, payload) =>{
+    fullEditTodo: async (context, payload) =>{
         context.commit("FULL_EDIT_TODO", payload);
     }
 }

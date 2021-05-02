@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import {todo_module} from "@/store/modules/todos.js";
 import {steps} from "@/store/modules/steps";
 import {groups_module} from "@/store/modules/groups";
+import {auth} from "./modules/auth"
 
 Vue.use(Vuex);
 
@@ -10,6 +11,7 @@ export default new Vuex.Store({
     modules:{
         todo: todo_module,
         step: steps,
-        groups: groups_module
+        groups: groups_module,
+        auth
     }
 });

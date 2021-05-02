@@ -18,7 +18,7 @@ export default {
   components: { TodoGroup},
   computed:{
     groups(){
-
+      console.log(this.$store.getters.getGroups);
       return this.$store.getters.getGroups;
     }
   },

@@ -3,7 +3,7 @@
     <v-list-item-action>
       <v-text-field label="New group"
                     @keydown.enter="createGroup"
-                    v-model="name"
+                    v-model="newTodo.groupTitle"
       >
         <v-icon
             slot="append"
@@ -22,15 +22,16 @@ export default {
 name: "NewGroup",
   data(){
     return {
-      name: "",
-      id: 3
+      newTodo:{
+        groupTitle: "",
+        userId: this.$store.getters["auth/getUserId"],
+      }
     }
   },
   methods:{
     createGroup(){
-      this.$store.dispatch("addGroup",this);
-      this.name = "";
-      this.id += 1;
+      this.$store.dispatch("addGroup",this.newTodo);
+      this.groupTitle = "";
     }
   }
 }

@@ -1,11 +1,7 @@
+import GroupApiItem from "@/api/group.api"
+
 const state ={
-    groups:[{
-        id:1,
-        name:"Test group"
-    },{
-        id:2,
-        name:"ABCDE"
-    }]
+    groups:[]
 };
 
 const getters = {
@@ -13,16 +9,15 @@ const getters = {
 };
 
 const mutations ={
+    SET_GROUPS: (state, payload) =>{
+        state.groups = payload;
+    },
     ADD_GROUP: (state, payload) =>{
-        const newGroup = {
-            id: payload.id,
-            name:payload.name
-        }
-        state.groups.unshift(newGroup)
+        state.groups.unshift(payload)
     },
     EDIT_GROUP: (state, payload) => {
         const group = state.groups.find(group => group.id === payload.id);
-        group.text = payload.newtext;
+        Object.assign(group, payload);
     }
     ,
     DELETE_GROUP: (state, payload) =>{
@@ -30,18 +25,54 @@ const mutations ={
         if (index > -1){
             state.groups.splice(index, 1);
         }
+        console.log(index);
     }
 }
 
 const actions = {
-    addGroup:(context, payload) =>{
-        context.commit("ADD_GROUP", payload);
+    initializeGroup: async(context,payload) =>{
+        try {
+            const response = await GroupApiItem.groupApiItem.getByUserId(payload);
+            context.commit('SET_GROUPS', response.data );
+        }
+        catch (error) {
+            console.log("err init group");
+        }
     },
-    editGroup:(context, payload) =>{
-        context.commit("EDIT_GROUP", payload);
+    addGroup: async (context, payload) =>{
+        try {
+            const newGroup = {
+                userId:payload.userId,
+                groupTitle:payload.groupTitle,
+                createdOn:new Date()
+            }
+            console.log(newGroup)
+            const response = await GroupApiItem.groupApiItem.add(newGroup);
+            context.commit("ADD_GROUP", response.data);
+        }
+        catch (error) {
+            console.log("err add group");
+        }
     },
-    deleteGroup:(context, payload) =>{
-        context.commit("DELETE_GROUP", payload);
+    editGroup: async (context, payload) =>{
+        try {
+            console.log(payload);
+            const response = await GroupApiItem.groupApiItem.edit(payload.id,payload.item);
+            context.commit('EDIT_GROUP', response.data );
+        }
+        catch (error) {
+            console.log("err edit group");
+        }
+    },
+    deleteGroup: async (context, payload) =>{
+        try {
+            const response = await GroupApiItem.groupApiItem.delete(payload);
+            console.log(response.data);
+            context.commit('DELETE_GROUP', response.data );
+        }
+        catch (error) {
+            console.log("err init group");
+        }
     }
 }
 export const groups_module = {

@@ -12,8 +12,7 @@
 <!--        <TodoList />-->
 <!--      </div>-->
 <!--    </div>-->
-      <div id="app">
-        <v-app id="inspire">
+
 <!--          <v-app id="inspire">-->
             <v-navigation-drawer
                 v-model="drawer"
@@ -59,16 +58,16 @@
 
             </v-navigation-drawer>
 
-            <v-app-bar
-                app
-                color="indigo"
-                dark
-            >
-              <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-              <v-toolbar-title>Application</v-toolbar-title>
-            </v-app-bar>
+<!--            <v-app-bar-->
+<!--                app-->
+<!--                color="indigo"-->
+<!--                dark-->
+<!--            >-->
+<!--              <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>-->
+<!--              <v-toolbar-title>Application</v-toolbar-title>-->
+<!--            </v-app-bar>-->
 
-            <v-main>
+<!--            <v-main>-->
               <v-container
                   class="fill-height"
                   fluid
@@ -76,11 +75,11 @@
                 <v-row align="center" justify="center">
                   <NewTodo :group_id="group_id"/>
                 </v-row>
-                <v-row align="center" justify="center" no-gutters>
+                <v-row align="center" justify="center" >
                   <TodoList :selected_group="selected_group" :group_id="group_id"/>
                 </v-row>
               </v-container>
-            </v-main>
+<!--            </v-main>-->
             <v-footer
                 color="indigo"
                 app
@@ -89,11 +88,9 @@
             </v-footer
             >
 <!--          </v-app>-->
-        </v-app>
       </div>
 
 <!--      </v-app>-->
-  </div>
 
 </template>
 
@@ -102,8 +99,9 @@ import NewTodo from "@/components/TodoItems/NewTodo";
 import TodoList from "@/components/TodoItems/TodoList";
 import GroupList from "@/components/TodoGroup/GroupList";
 import NewGroup from "@/components/TodoGroup/NewGroup";
+import { mapActions } from 'vuex';
 export default {
-  name: 'App',
+  name: 'MainView',
 
   components: {
     GroupList,
@@ -115,15 +113,24 @@ export default {
   data: () => ({
     drawer: true,
     selected_group:'none',
-    group_id:0
+    group_id:0,
   }),
+
+  mounted() {
+    let user_id = this.$store.getters["auth/getUserId"]
+    this.$nextTick(async () => {
+      await this.initializeGroup(user_id);
+    });
+  },
 
   methods:{
     selectGroup(value){
       this.selected_group = 'created';
       this.group_id = value;
-      console.log('id',value);
-    }
+    },
+    ...mapActions([
+        'initializeGroup'
+    ]),
   }
 };
 </script>
