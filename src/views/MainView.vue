@@ -19,33 +19,33 @@
                 app
             >
               <v-list dense>
-                <v-list-item link v-on:click="selected_group='today'">
+                <v-list-item link v-on:click="selectCategory('today')">
                   <v-list-item-action>
-                    <v-icon>mdi-home</v-icon>
+                    <v-icon>mdi-bell</v-icon>
                   </v-list-item-action>
                   <v-list-item-content>
                     <v-list-item-title>Today</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item link v-on:click="selected_group='planned'">
+                <v-list-item link v-on:click="selectCategory('planned')">
                   <v-list-item-action>
-                    <v-icon>mdi-email</v-icon>
+                    <v-icon>mdi-calendar</v-icon>
                   </v-list-item-action>
                   <v-list-item-content>
                     <v-list-item-title>Planned</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item link v-on:click="selected_group='important'">
+                <v-list-item link v-on:click="selectCategory('important')">
                   <v-list-item-action>
-                    <v-icon>mdi-email</v-icon>
+                    <v-icon>mdi-star</v-icon>
                   </v-list-item-action>
                   <v-list-item-content>
                     <v-list-item-title>Important</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item link @click="selected_group='completed'">
+                <v-list-item link @click="selectCategory('completed')">
                   <v-list-item-action>
-                    <v-icon>mdi-email</v-icon>
+                    <v-icon>mdi-check</v-icon>
                   </v-list-item-action>
                   <v-list-item-content>
                     <v-list-item-title>Completed</v-list-item-title>
@@ -124,12 +124,28 @@ export default {
   },
 
   methods:{
-    selectGroup(value){
+    async selectGroup(value){
       this.selected_group = 'created';
       this.group_id = value;
+      // this.$nextTick(async () => {
+        await this.initByGroup(this.group_id);
+        await this.initStepsByGroup(this.group_id);
+      // });
     },
+
+    async selectCategory(cat){
+      this.selected_group = cat;
+      let user_id = this.$store.getters["auth/getUserId"];
+      await this.initByUser(user_id);
+      await this.initStepsByUser(user_id);
+    },
+
     ...mapActions([
-        'initializeGroup'
+        'initializeGroup',
+        'initByGroup',
+        'initByUser',
+        'initStepsByGroup',
+        'initStepsByUser'
     ]),
   }
 };

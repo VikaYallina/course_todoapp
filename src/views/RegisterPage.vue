@@ -1,18 +1,17 @@
 <template>
 <div class="container">
   <div class="col-md-12">
-    <div class="card card-container">
-      <form name="form" @submit.prevent="handleRegister">
+      <v-form name="form" @submit.prevent="handleRegister">
         <div v-if="!successful">
           <div class="form-group">
-            <label for="username">Username</label>
-            <input
+            <v-text-field
                 v-model="user.username"
                 v-validate="'required|min:3|max:20'"
                 type="text"
                 class="form-control"
                 name="username"
                 id="username"
+                label="Username"
             />
             <div
                 v-if="submitted && errors.has('username')"
@@ -20,14 +19,14 @@
             >{{errors.first('username')}}</div>
           </div>
           <div class="form-group">
-            <label for="email">Email</label>
-            <input
+            <v-text-field
                 v-model="user.email"
                 v-validate="'required|email|max:50'"
                 type="email"
                 class="form-control"
                 name="email"
                 id="email"
+                label="Email"
             />
             <div
                 v-if="submitted && errors.has('email')"
@@ -35,25 +34,27 @@
             >{{errors.first('email')}}</div>
           </div>
           <div class="form-group">
-            <label for="password">Password</label>
-            <input
+            <v-text-field
                 v-model="user.password"
                 v-validate="'required|min:6|max:40'"
                 type="password"
                 class="form-control"
                 id="password"
                 name="password"
+                label="Password"
             />
             <div
                 v-if="submitted && errors.has('password')"
                 class="alert-danger"
             >{{errors.first('password')}}</div>
           </div>
-          <div class="form-group">
-            <button class="btn btn-primary btn-block">Sign Up</button>
-          </div>
+          <v-btn
+              class="ma-2"
+              @click="handleRegister">
+            Login
+          </v-btn>
         </div>
-      </form>
+      </v-form>
 
       <div
           v-if="message"
@@ -61,7 +62,6 @@
           :class="successful ? 'alert-success' : 'alert-danger'"
       >{{message}}</div>
     </div>
-  </div>
 </div>
 </template>
 

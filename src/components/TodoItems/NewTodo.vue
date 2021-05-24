@@ -4,7 +4,7 @@
       class="todo-input"
       type="text"
       placeholder="Enter a new task"
-      v-model="text">
+      v-model="newTodo.itemText">
 </form>
 </template>
 
@@ -13,8 +13,9 @@ export default {
 name: "NewTodo",
   data(){
     return {
-      text: "",
-      newId: 0
+      newTodo:{
+        itemText:"",
+      }
     }
   },
   props:{
@@ -22,9 +23,12 @@ name: "NewTodo",
   },
   methods:{
     addTodo: function(){
-      this.$store.dispatch("addTodo",this);
-      this.newId++;
-      this.text = "";
+      const newTodo = {
+        groupId:this.group_id,
+        itemText:this.newTodo.itemText,
+      }
+      this.$store.dispatch("addTodo",newTodo);
+      this.newTodo.itemText = "";
     }
   }
 }

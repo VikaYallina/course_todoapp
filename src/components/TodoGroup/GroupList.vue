@@ -1,9 +1,9 @@
 <template>
   <div>
     <TodoGroup v-for="group in groups"
-               :key="group.id"
-               :group="group"
-               @click.native="emitEvent(group.id)"
+               v-bind:key="group.id"
+               v-bind:group="group"
+               v-on:click.native="emitEvent(group.id)"
     >{{ group.id }}
     </TodoGroup>
 
@@ -18,7 +18,6 @@ export default {
   components: { TodoGroup},
   computed:{
     groups(){
-      console.log(this.$store.getters.getGroups);
       return this.$store.getters.getGroups;
     }
   },

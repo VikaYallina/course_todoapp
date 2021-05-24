@@ -28,6 +28,12 @@ export default {
                 method: "GET"
             });
         },
+        toggle(id){
+            return axios({
+                url: `${apiUrl}/${this.resourceUrl}/toggle/${id}`,
+                method: "PUT"
+            });
+        },
         add(item) {
             return axios({
                 url: `${apiUrl}/${this.resourceUrl}`,

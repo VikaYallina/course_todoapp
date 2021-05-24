@@ -1,33 +1,23 @@
+import StepApiItem from "@/api/step.api";
+import Vue from 'vue';
+
 const state = {
-    steps:[{
-        id:0,
-        text:"test",
-        todo_id:0,
-        completed:false
-    },{
-        id:1,
-        text:"new test",
-        todo_id:1,
-        completed:true
-    }]
+    steps:[]
 }
 
 const getters = {
     getStepsByTodo: (state) => (id) =>{
-        return state.steps.filter(item => item.todo_id === id);
+        return state.steps.filter(item => item.todoItem.id === id);
     },
     getSteps: (state) => state.steps,
 }
 
 const mutations ={
+    SET_STEPS: (state, payload) =>{
+        state.steps = payload;
+    },
     ADD_STEP: (state, payload) =>{
-        const new_step ={
-            id: payload.newId,
-            text: payload.text,
-            todo_id: payload.todo_id,
-            completed: false
-        }
-        state.steps.push(new_step)
+        state.steps.push(payload)
     },
 
     TOGGLE_STEP: (state, payload) => {
@@ -36,10 +26,8 @@ const mutations ={
     },
 
     EDIT_STEP: (state, payload) =>{
-        const step = state.steps.find(step => step.id === payload.id);
-        if (step.text){
-            step.text = payload.text;
-        }
+        const index = state.steps.findIndex(step => step.id === payload.id);
+        Vue.set(state.steps,index,payload)
     },
 
     DELETE_STEP: (state, payload)=>{
@@ -49,17 +37,57 @@ const mutations ={
 }
 
 const actions = {
-    addStep: (context, payload) =>{
-        context.commit('ADD_STEP',payload);
+    initStepsByGroup: async(context, payload) =>{
+        try{
+            const response = await StepApiItem.stepApiItem.getByGroupId(payload);
+            context.commit('SET_STEPS', response.data );
+        }catch (error){
+            console.log("err init step");
+        }
     },
-    toggleStep: (context, payload) =>{
-        context.commit('TOGGLE_STEP',payload);
+    initStepsByUser: async(context, payload) =>{
+        try{
+            const response = await StepApiItem.stepApiItem.getByUserId(payload);
+            context.commit('SET_STEPS', response.data );
+        }catch (error){
+            console.log("err init step");
+        }
     },
-    edit_step: (context, payload) =>{
-        context.commit('EDIT_STEP',payload);
+    addStep: async (context, payload) =>{
+        try {
+            const response = await StepApiItem.stepApiItem.add(payload);
+            context.commit('ADD_STEP', response.data );
+        }
+        catch (error) {
+            console.log("err add step");
+        }
     },
-    delete_step: (context, payload) =>{
-        context.commit('DELETE_STEP',payload);
+    toggleStep: async (context, payload) =>{
+        try {
+            const response = await StepApiItem.stepApiItem.toggle(payload);
+            context.commit('TOGGLE_STEP', response.data );
+        }
+        catch (error) {
+            console.log("err toggle step");
+        }
+    },
+    editStep: async (context, payload) =>{
+        try {
+            const response = await StepApiItem.stepApiItem.edit(payload.id,payload.item);
+            context.commit('EDIT_STEP', response.data );
+        }
+        catch (error) {
+            console.log("err edit step");
+        }
+    },
+    deleteStep: async (context, payload) =>{
+        try {
+            const response = await StepApiItem.stepApiItem.delete(payload);
+            context.commit('DELETE_STEP', response.data );
+        }
+        catch (error) {
+            console.log("err delete step");
+        }
     }
 }
 

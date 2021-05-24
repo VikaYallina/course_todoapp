@@ -1,23 +1,27 @@
 import GroupApiItem from "@/api/group.api"
+import Vue from "vue";
 
+// Состояние хранилища
 const state ={
     groups:[]
 };
-
+// Для получения данных хранилища используются особые аттрибуты "геттеры"
 const getters = {
     getGroups: state => state.groups,
 };
 
+// Мутации используются для изменения состояния
 const mutations ={
+    // Инициализация состояния
     SET_GROUPS: (state, payload) =>{
         state.groups = payload;
     },
     ADD_GROUP: (state, payload) =>{
-        state.groups.unshift(payload)
+        state.groups.push(payload)
     },
     EDIT_GROUP: (state, payload) => {
-        const group = state.groups.find(group => group.id === payload.id);
-        Object.assign(group, payload);
+        const index = state.groups.findIndex(group => group.id === payload.id);
+        Vue.set(state.todos, index, payload);
     }
     ,
     DELETE_GROUP: (state, payload) =>{
@@ -29,10 +33,13 @@ const mutations ={
     }
 }
 
+// Действия используются для асинхронных операций над состоянием
 const actions = {
     initializeGroup: async(context,payload) =>{
         try {
+            // Получение данных из API при помощи библиотеки axios
             const response = await GroupApiItem.groupApiItem.getByUserId(payload);
+            // Осуществление мутации состояния
             context.commit('SET_GROUPS', response.data );
         }
         catch (error) {

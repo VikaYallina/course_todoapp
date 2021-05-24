@@ -1,86 +1,137 @@
-import GroupApiItem from "@/api/group.api";
-
+import TodoApiItem from "@/api/todoitem.api";
+import Vue from 'vue';
 
 const state = {
     todos: []
 };
 
 const getters ={
-    getTodos: state => state.todos,
-    doneTodos: state => state.todos.filter(todo => todo.completed),
-    getTodoByGroup: state => (id) =>{
-        return state.todos.filter(todo => todo.group_id === id)
-    },
-    getTodayTodos: state => state.todos.filter(checkToday)
+    allTodos: state => state.todos,
+    getTodos: state => state.todos.sort(function(a,b){
+        // Turn your strings into dates, and then subtract them
+        // to get a value that is either negative, positive, or zero.
+        return new Date(b.createdOn) - new Date(a.createdOn);
+    }),
+    getTodayTodos: state => state.todos.filter(checkToday),
+    //todo ::
+    getImportantTodos: state => state.todos,
+    //todo ::
+    getPlannedTodos: state => state.todos,
+    getCompletedTodos: state => state.todos.filter(todo => todo.completed),
+    getTodoById: state => (id) =>{
+        let todo =  state.todos.find(item => item.id === id);
+        console.log(id, todo);
+        return todo;
+    }
 };
 
 const mutations = {
+    SET_TODOS: (state, payload) =>{
+        if (payload.length === 0)
+            state.todos = [];
+        else
+            state.todos = payload;
+    },
     ADD_TODO: (state, payload) =>{
-        const newTask={
-            id: payload.newId,
-            text: payload.text,
-            completed: false,
-            steps: [],
-            complete_by: payload.complete_by,
-            importance_lvl:1,
-            group_id: payload.group_id
-        }
-        state.todos.unshift(newTask);
+        state.todos.unshift(payload);
     },
-
     TOGGLE_TODO: (state, payload) =>{
-        const item = state.todos.find(todo => todo.id === payload);
-        item.completed = !item.completed
+        const item = state.todos.find(todo => todo.id === payload.id);
+        item.isCompleted = !item.isCompleted;
+        item.completedOn = payload.completedOn;
     },
-
-     DELETE_TODO: (state, payload) =>{
-        const index = state.todos.findIndex(todo => todo.id === payload);
-        state.todos.splice(index,1);
-
-     },
-
     EDIT_TODO: (state, payload) =>{
-        const index = state.todos.findIndex(todo => todo.id === payload.id);
-        if (index>-1){
-            state.todos[index].text = payload.new_text;
-        }
+        const item_id = state.todos.findIndex(todo => todo.id === payload.id);
+        console.log(payload.id);
+        // Object.assign(item, payload);
+        Vue.set(state.todos, item_id, payload);
+        // this.$set(this.state,item_id,payload);
+        console.log(state.todos)
     },
-
-    FULL_EDIT_TODO: (state, payload) =>{
+    DELETE_TODO: (state, payload) =>{
         const index = state.todos.findIndex(todo => todo.id === payload.id);
-        if (index>-1){
-            state.todos[index].text = payload.text;
-            state.todos[index].complete_by = payload.data.state.complete_by;
-            state.todos[index].importance_lvl = payload.imp_lvl;
-        }
-    }
+        console.log("id:"+payload.id+" index:"+index)
+        state.todos.splice(index,1);
+    },
 
 };
 
 
 const actions ={
-    addTodo: async (context, payload) =>{
+    initAll: async(context) =>{
         try {
-            const response = await GroupApiItem.groupApiItem.delete(payload);
-            console.log(response.data);
-            context.commit('DELETE_GROUP', response.data );
+            const response = await TodoApiItem.todoApiItem.getAll();
+            context.commit('SET_TODOS', response.data );
         }
         catch (error) {
-            console.log("err init group");
+            console.log("err init all todos");
         }
     },
-    toggleTodo: async (context, payload) =>{
-        context.commit("TOGGLE_TODO", payload);
+    initByUser: async(context,id) =>{
+        try {
+            const response = await TodoApiItem.todoApiItem.getByUserId(id);
+            context.commit('SET_TODOS', response.data );
+        }
+        catch (error) {
+            console.log("err init todos by User id: "+error);
+        }
     },
-    deleteTodo: async (context, payload) =>{
-        context.commit("DELETE_TODO",payload);
+    initByGroup: async(context,id) =>{
+        try {
+            const response = await TodoApiItem.todoApiItem.getByGroupId(id);
+            console.log(response.data);
+            context.commit('SET_TODOS', response.data );
+        }
+        catch (error) {
+            console.log("err init todos by group id: "+error);
+        }
+    },
+    addTodo: async (context, item) =>{
+        try {
+            const newTodo = {
+                groupId:item.groupId,
+                itemText:item.itemText,
+                createdOn:new Date(),
+                isCompleted:false,
+                importanceLvl:"1",
+                completeBy:item.completeBy
+            }
+            const response = await TodoApiItem.todoApiItem.add(newTodo);
+            context.commit('ADD_TODO', response.data );
+        }
+        catch (error) {
+            console.log("err add todo"+error);
+        }
+    },
+    toggleTodo: async (context, id) =>{
+        try {
+            const response = await TodoApiItem.todoApiItem.toggle(id);
+            context.commit('TOGGLE_TODO', response.data );
+        }
+        catch (error) {
+            console.log("err toggle todo");
+        }
     },
     editTodo: async (context, payload) =>{
-        context.commit("EDIT_TODO",payload)
+        try {
+            const response = await TodoApiItem.todoApiItem.edit(payload.id, payload.item);
+            context.commit('EDIT_TODO', response.data );
+        }
+        catch (error) {
+            if( error.response ){
+                console.log(error.response.data); // => the response payload
+            }
+        }
     },
-    fullEditTodo: async (context, payload) =>{
-        context.commit("FULL_EDIT_TODO", payload);
-    }
+    deleteTodo: async (context, id) =>{
+        try {
+            const response = await TodoApiItem.todoApiItem.delete(id);
+            context.commit('DELETE_TODO', response.data );
+        }
+        catch (error) {
+            console.log("err delete todo");
+        }
+    },
 }
 
 export const todo_module = {
@@ -92,6 +143,6 @@ export const todo_module = {
 
 function checkToday(todo){
     let today = new Date();
-    let todo_date = new Date(todo.complete_by);
+    let todo_date = new Date(todo.completeBy);
     return today.toDateString() === todo_date.toDateString()
 }

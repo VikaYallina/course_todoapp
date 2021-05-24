@@ -1,143 +1,149 @@
 <template>
-  <v-card tile
-          max-width="900"
-          class="mx-auto"
-          color=getColor>
+  <v-container>
+    <v-card
+            max-width="900"
+            class="mx-auto"
+            elevation="2"
+            :color="color"
+            outlined
+            shaped>
       <v-card-title v-bind:class="{done: todo.completed}">
-      <v-checkbox  v-model="todo.completed"
-             v-on:change=toggleTodo(todo.id) />
-      <input
-          v-if="state.edit"
-          v-model="todo.text"
-          @blur="editTodo(todo.id, $event.target.value); state.edit = false;"
-          @keyup.enter="editTodo(todo.id, $event.target.value); state.edit = false;"
-          v-focus
-      />
-          <label v-else @click="state.edit=true;">{{todo.text}}</label>
+        <v-checkbox  v-model="state.is_complete"
+                     v-on:change=toggleTodo(todo.id) />
+        <input
+            v-if="state.edit"
+            v-model="state.mod_edit_text"
+            @blur="state.mod_edit_text = todo.itemText ;state.edit = false;"
+            @keyup.enter="editTodo(todo.id, $event.target.value); state.edit = false;"
+            v-focus
+        />
+        <label v-else @click="state.edit=true;">{{state.mod_edit_text}}</label>
 
-    </v-card-title>
+      </v-card-title>
 
-    <button class="edit-todo"
-            @click="showModal">edit</button>
+      <v-card-text>
+        <StepList v-bind:todo_id="todo.id"
+                  class="list"
+        ></StepList>
+      </v-card-text>
 
-    <button class="delete"
-              @click=deleteTodo(todo.id)>&times;</button>
-
-    <StepList v-bind:todo_id="todo.id"
-              class="list"
-    ></StepList>
-
-    <v-dialog v-model="dialog"
-              transition="dialog-bottom-transition"
-              persistent
-              max-width="600px">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-            color="primary"
-            v-bind="attrs"
-            v-on="on"
-        >From the bottom</v-btn>
-      </template>
-      <template v-slot:default="dialog">
-        <v-card>
-          <v-toolbar
-              color="indigo"
-              dark
-          >
-            <input
-                v-if="state.modal_edit"
-                v-model="state.mod_edit_text"
-                @blur="state.modal_edit = false;"
-                @keyup.enter=" state.modal_edit = false;"
-                v-focus
-            />
-            <v-card-title v-else @click="state.modal_edit=true;">{{state.mod_edit_text}}</v-card-title>
-          </v-toolbar>
-          <v-card-text>
-            <v-menu
-                v-model="menu"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                transition="scale-transition"
-                offset-y
-                min-width="auto"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                    v-model="todo.complete_by"
-                    label="Picker without buttons"
-                    prepend-icon="mdi-calendar"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                  v-model="todo.complete_by"
-                  @input="menu = false"
-                  color="indigo"
-              ></v-date-picker>
-            </v-menu>
-            <v-container fluid>
-              <v-radio-group
-                  column
-                  v-model="state.mod_importance">
-                <template v-slot:label>
-                  <div>Уровень важности:</div>
-                </template>
-                <v-radio value="5"
-                         color="red accent-4">
-                  <template v-slot:label>
-                    <div>Очень срочно</div>
-                  </template>
-                </v-radio>
-                <v-radio value="4"
-                         color="orange accent-4">
-                  <template v-slot:label>
-                    <div>Важно</div>
-                  </template>
-                </v-radio>
-                <v-radio value="3"
-                         color="yellow accent-4">
-                  <template v-slot:label>
-                    <div>Средняя важность</div>
-                  </template>
-                </v-radio>
-                <v-radio value="2"
-                         color="green accent-4">
-                  <template v-slot:label>
-                    <div>Может подождать</div>
-                  </template>
-                </v-radio>
-                <v-radio value="1"
-                         color="cyan accent-3">
-                  <template v-slot:label>
-                    <div>Совсем не важно</div>
-                  </template>
-                </v-radio>
-              </v-radio-group>
-            </v-container>
-          </v-card-text>
-          <v-card-actions class="justify-end">
+      <v-card-actions >
+        <v-dialog v-model="dialog"
+                  transition="dialog-bottom-transition"
+                  persistent
+                  max-width="600px">
+          <template v-slot:activator="{ on, attrs }">
             <v-btn
-                text
-                @click="dialog.value = false"
-            >Save</v-btn>
-            <v-btn
-                text
-                @click="dialog.value = false"
-            >Close</v-btn>
-          </v-card-actions>
-        </v-card>
-      </template>
-    </v-dialog>
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+            >From the bottom</v-btn>
+          </template>
+<!--          <template v-slot:default="dialog">-->
+          <template>
+            <v-card>
+              <v-toolbar
+                  :color="color"
+                  dark
+              >
+                <input
+                    v-if="state.modal_edit"
+                    v-model="state.mod_edit_text"
+                    @blur="state.modal_edit = false;"
+                    @keyup.enter=" state.modal_edit = false;"
+                    v-focus
+                />
+                <v-card-title v-else @click="state.modal_edit=true;">{{state.mod_edit_text}}</v-card-title>
+              </v-toolbar>
+              <v-card-text>
+                <v-menu
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                        v-model="state.mod_completeBy"
+                        label="Picker without buttons"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                      v-model="state.mod_completeBy"
+                      @input="menu = false"
+                      color="indigo"
+                  ></v-date-picker>
+                </v-menu>
+                <v-container fluid>
+                  <v-radio-group
+                      column
+                      v-model="state.mod_importance">
+                    <template v-slot:label>
+                      <div>Уровень важности:</div>
+                    </template>
+                    <v-radio value="5"
+                             color="red accent-4">
+                      <template v-slot:label>
+                        <div>Очень срочно</div>
+                      </template>
+                    </v-radio>
+                    <v-radio value="4"
+                             color="orange accent-4">
+                      <template v-slot:label>
+                        <div>Важно</div>
+                      </template>
+                    </v-radio>
+                    <v-radio value="3"
+                             color="yellow accent-4">
+                      <template v-slot:label>
+                        <div>Средняя важность</div>
+                      </template>
+                    </v-radio>
+                    <v-radio value="2"
+                             color="lime accent-4">
+                      <template v-slot:label>
+                        <div>Может подождать</div>
+                      </template>
+                    </v-radio>
+                    <v-radio value="1"
+                             color="cyan accent-3">
+                      <template v-slot:label>
+                        <div>Совсем не важно</div>
+                      </template>
+                    </v-radio>
+                  </v-radio-group>
+                </v-container>
+              </v-card-text>
+              <v-card-actions class="justify-end">
+                <v-btn
+                    text
+                    @click="callSave()"
+                >Save</v-btn>
+                <v-btn
+                    text
+                    @click="callClose()"
+                >Close</v-btn>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </v-dialog>
 
-  </v-card>
+        <v-btn @click=deleteTodo(todo.id)>Delete</v-btn>
+      </v-card-actions>
+
+    </v-card>
+  </v-container>
 </template>
 
 <script>
 import StepList from "@/components/StepItems/StepList";
-import utils from "@/services/utils"
+import {getColor, parseDate} from "@/services/utils.js"
 export default {
   name: "Todo",
   components: {StepList},
@@ -151,34 +157,95 @@ export default {
     group_id: Number
   },
   data() {
+    let data,color;
+    if (this.todo.completeBy !=null)
+      data = parseDate(this.todo.completeBy);
+    if (this.todo.completed)
+      color = "green lighten-2";
+    else
+      color = getColor(this.todo.importanceLvl)
     return {
       state: {edit:false,
+              is_complete:this.todo.completed,
               modal_edit: false,
-              mod_edit_text: this.todo.text,
-              mod_importance:this.todo.importance_lvl,
+              mod_edit_text: this.todo.itemText,
+              mod_importance:this.todo.importanceLvl,
+              mod_completeBy:data
       },
       date: new Date().toISOString().substr(0, 10),
       menu: false,
       dialog:false,
+      color:color,
     }
   },
   methods:{
     toggleTodo: function (id){
-      this.$store.dispatch("toggleTodo", id);
+      let toggleItem = null;
+      if (this.state.is_complete) {
+        toggleItem = {
+          id:id,
+          item:{
+            isCompleted:this.state.is_complete,
+            completedOn:new Date()
+          }
+        }
+      }
+      else
+        toggleItem = {
+          id:id,
+          item:{
+            isCompleted:this.state.is_complete,
+            completedOn:null
+          }
+        }
+      this.$store.dispatch("editTodo",toggleItem)
     },
     deleteTodo: function(id){
       this.$store.dispatch("deleteTodo",id);
     },
-    editTodo: function (id, new_text){
-      this.$store.dispatch("editTodo",id,new_text);
+    editTodo: function (id,new_text){
+      const edit_todo={
+        id:id,
+        item:{
+          itemText:new_text
+        }
+      }
+      this.$store.dispatch("editTodo",edit_todo);
     },
-    showModal: function(){
-      this.$refs.modal.show = true;
+    callClose: function(){
+      this.state.mod_edit_text= this.todo.itemText;
+      this.state.mod_importance= this.todo.importanceLvl;
+      if (this.todo.completeBy != null)
+        this.state.mod_completeBy= parseDate(this.todo.completeBy);
+      this.dialog = false;
     },
-    getColor: function (){
-      return utils.getColor(this.todo.importance_lvl);
+    callSave: function(){
+      const edit_todo = {
+        item:{
+          itemText:this.state.mod_edit_text,
+          completeBy:this.state.mod_completeBy,
+          importanceLvl:this.state.mod_importance
+        },
+        id:this.todo.id
+      }
+      this.$store.dispatch("editTodo",edit_todo);
+      this.dialog = false;
     }
+  },
 
+
+  watch: {
+    todo: function (newVal) { // watch it
+      if (newVal.completed)
+        this.color = "green lighten-2";
+      else
+        this.color = getColor(newVal.importanceLvl)
+      this.state.mod_edit_text = newVal.itemText;
+      this.state.mod_importance = newVal.importanceLvl;
+      if (newVal.completeBy != null)
+        this.state.mod_completeBy = parseDate(newVal.completeBy);
+      this.state.is_complete = newVal.completed;
+    }
   },
   directives: {
     focus: {

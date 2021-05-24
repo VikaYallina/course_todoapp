@@ -35,6 +35,12 @@ export default {
                 data: item
             });
         },
+        toggle(id){
+            return axios({
+                url: `${apiUrl}/${this.resourceUrl}/toggle/${id}`,
+                method: "PUT",
+            });
+        },
         edit(id, item) {
             return axios({
                 url: `${apiUrl}/${this.resourceUrl}/${id}`,

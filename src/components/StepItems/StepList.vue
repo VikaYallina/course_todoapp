@@ -1,20 +1,21 @@
 <template>
-  <ul >
-    <Step v-for="(step, i) in steps(todo_id)"
-          :key="i"
-          v-bind:step="step"
-          v-bind:index="i"
-    ></Step>
-    <div v-if="!addNew">
-      <label class="new-placeholder">Add new item</label>
-      <button class="add" @click="addNew=true">+</button>
-    </div>
-    <NewStep v-bind:todo_id="this.todo_i"
-             v-else
-             @blur="addNew=false"
-             v-focus
-    ></NewStep>
-  </ul>
+  <v-container>
+    <v-expansion-panels>
+      <v-expansion-panel>
+        <v-expansion-panel-header><h4>Steps</h4></v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-divider></v-divider>
+          <v-list flat>
+              <Step v-for="(step, i) in steps(todo_id)"
+                    :key="i"
+                    v-bind:step="step"
+              ></Step>
+              <NewStep v-bind:todo_id="todo_id"></NewStep>
+          </v-list>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
+  </v-container>
 </template>
 
 <script>
@@ -29,25 +30,16 @@ name: "StepList",
   props:{
     todo_id: Number
   },
-  data(){
-    return {
-      todo_i:this.todo_id,
-      addNew:false
-    }
-  },
   methods:{
     steps(id){
-      return this.$store.getters.getStepsByTodo(id);
+      if (this.$store.getters.getSteps.length !== 0)
+        return this.$store.getters.getStepsByTodo(id);
+      else
+        return [];
     }
   },
 
-  directives: {
-    focus: {
-      inserted (el) {
-        el.focus()
-      }
-    }
-  }
+
 }
 </script>
 

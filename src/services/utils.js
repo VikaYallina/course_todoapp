@@ -1,9 +1,9 @@
-export default function getColor(imp_lvl){
+export  function getColor(imp_lvl){
     switch(imp_lvl){
         case "1":
             return "cyan lighten-2"
         case "2":
-            return "green lighten-2";
+            return "lime lighten-2";
         case "3":
             return "yellow lighten-2"
         case "4":
@@ -13,4 +13,8 @@ export default function getColor(imp_lvl){
         default:
             return "cyan lighten-2";
     }
+}
+
+export function parseDate(date){
+    return date.substr(0,10);
 }

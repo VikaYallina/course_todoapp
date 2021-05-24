@@ -31,7 +31,7 @@ name: "NewGroup",
   methods:{
     createGroup(){
       this.$store.dispatch("addGroup",this.newTodo);
-      this.groupTitle = "";
+      this.newTodo.groupTitle = "";
     }
   }
 }
